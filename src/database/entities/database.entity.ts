@@ -3,8 +3,8 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 @Entity('kms')
 export class Kms {
     
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn({type: 'int'})
+    id: number;
 
     @Column({ type:'double precision'})
     km: number;
@@ -15,7 +15,7 @@ export class Kms {
     @Column({ type: 'double precision' })
     longitude: number;
 
-    @Column({ type: 'double precision' })
+    @Column({ type: 'int' })
     lineId: number;
     
     @OneToMany(()=>KmCordinates, (cordinates)=> cordinates.kms, {cascade: true ,onDelete: 'CASCADE'})
@@ -25,8 +25,8 @@ export class Kms {
 @Entity('km_cordinates')
 export class KmCordinates {
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn({type: 'bigint'})
+    id: number;
 
     @ManyToOne(()=>Kms, (kms)=> kms.cordinates, {onDelete: 'CASCADE'})
     @JoinColumn({ name: "kms_id" })

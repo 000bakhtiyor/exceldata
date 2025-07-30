@@ -2,14 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateKmCordinateDto {
-        @ApiProperty({
-            description: 'Latitude of the coordinate',
-            example: 27.1751,
-            type: Number,
-        })
-        @IsNumber()
-        @IsNotEmpty()
-        latitude: number;
+    @ApiProperty({
+        description: 'Latitude of the coordinate',
+        example: 27.1751,
+        type: Number,
+    })
+    @IsNumber()
+    @IsNotEmpty()
+    latitude: number;
     
     @ApiProperty({
             description: 'Longitude of the coordinate',
@@ -19,13 +19,4 @@ export class CreateKmCordinateDto {
     @IsNumber()
     @IsNotEmpty()
     longitude: number;
-
-    @ApiProperty({
-        description: 'Kms ID of the coordinate',
-        example: "uuid",
-        type: String,
-    })
-    @IsString()
-    @IsNotEmpty()
-    KmsId: string;
 }

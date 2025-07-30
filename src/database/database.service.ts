@@ -46,56 +46,51 @@ async saveRailwayDataToDb(railwayData: RailwayBlock[], lineId?: number): Promise
       const createCoordDto: CreateKmCordinateDto = {
         latitude: coord.latitude,
         longitude: coord.longitude,
-        KmsId: savedKms.id,
       };
 
-      await this.createKmCordinates(createCoordDto);
+      await this.createKmCordinates(savedKms.id,createCoordDto);
     }
   }
 }
 
   async findAllKms(): Promise<Kms[]> {
-    return this.kmsRepository.find({
-      relations: ['cordinates']
-    });
+    return this.kmsRepository.find();
   }
 
-  async findOneKms(id: string): Promise<Kms> {
-    const entity = await this.kmsRepository.findOneBy({ id });
+  async findOneKms(id: number): Promise<Kms> {
+    const entity = await this.kmsRepository.findOne({
+      where: {id},
+      relations: ['cordinates']
+    });
     if (!entity) throw new NotFoundException(`Kms with id ${id} not found`);
     return entity;
   }
 
-  async updateKms(id: string, dto: UpdateKmsDto): Promise<Kms> {
+  async updateKms(id: number, dto: UpdateKmsDto): Promise<Kms> {
     const kms = await this.findOneKms(id);
-    const updated = this.kmsRepository.merge(kms, dto);
-    return await this.kmsRepository.save(updated);
+    Object.assign(kms, dto)
+    return await this.kmsRepository.save(kms);
   }
 
-  async removeKms(id: string): Promise<void> {
+  async removeKms(id: number): Promise<void> {
     const kms = await this.findOneKms(id);
     await this.kmsRepository.remove(kms);
   }
 
 
 
-async createKmCordinates(dto: CreateKmCordinateDto): Promise < KmCordinates > {
-  const { KmsId } = dto;
+async createKmCordinates(kmId: number ,dto: CreateKmCordinateDto): Promise <KmCordinates> {
 
-  if(!KmsId) {
+  if (!kmId) {
     throw new NotFoundException('KmsId is required');
   }
 
-  if(!isUUID(KmsId)) {
-    throw new BadRequestException('KmsId must be a valid UUID');
-  }
-
   const existingKms = await this.kmsRepository.findOne({
-    where: { id: KmsId },
+    where: { id: kmId },
   });
 
   if (!existingKms) {
-    throw new NotFoundException(`Kms not found for id: ${KmsId}`);
+    throw new NotFoundException(`Km not found for id: ${kmId}`);
   }
 
   const newCoordinate = this.cordinatesRepository.create({
@@ -107,13 +102,7 @@ async createKmCordinates(dto: CreateKmCordinateDto): Promise < KmCordinates > {
 }
 
 
-  async findAllCordinates(): Promise<KmCordinates[]> {
-    return this.cordinatesRepository.find({
-      relations: ['kms']
-    });
-  }
-
-  async findOneCordinate(id: string): Promise<KmCordinates> {
+  async findOneCordinate(id: number): Promise<KmCordinates> {
     const cord = await this.cordinatesRepository.findOne({ 
       where: {id},
       relations: ['kms']
@@ -122,13 +111,13 @@ async createKmCordinates(dto: CreateKmCordinateDto): Promise < KmCordinates > {
     return cord;
   }
 
-  async updateCordinate(id: string, dto: UpdateKmCordinateDto): Promise<KmCordinates> {
+  async updateCordinate(id: number, dto: UpdateKmCordinateDto): Promise<KmCordinates> {
     const cord = await this.findOneCordinate(id);
-    const updated = this.cordinatesRepository.merge(cord, dto);
-    return await this.cordinatesRepository.save(updated);
+    Object.assign(cord, dto)
+    return await this.cordinatesRepository.save(cord);
   }
 
-  async removeCordinate(id: string): Promise<void> {
+  async removeCordinate(id: number): Promise<void> {
     const cord = await this.findOneCordinate(id);
     await this.cordinatesRepository.remove(cord);
   }
